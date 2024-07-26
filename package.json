@@ -1,0 +1,18 @@
+{
+  "name": "deliver_jokes",
+  "version": "1.0.0",
+  "description": "Deliver a random joke on request by a user from a web page.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.10.3",
+    "nodemon": "^3.1.4"
+  }
+}
