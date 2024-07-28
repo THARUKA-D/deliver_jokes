@@ -13,5 +13,5 @@ applyMiddleware(middleware, router);
 applyRoutes(routes, router);
 
 router.listen(PORT, () => {
-	console.log(`Server is running on Port:${PORT}`);
+  console.log(`Server is running on Port:${PORT}`);
 });

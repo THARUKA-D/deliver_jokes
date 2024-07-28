@@ -1,5 +1,5 @@
-const mysql = require('mysql2');
-const { db } = require('./environment');
+const mysql = require("mysql2");
+const { db } = require("./environment");
 
 const connection = mysql.createConnection({
   host: db.host,
@@ -11,9 +11,9 @@ const connection = mysql.createConnection({
 const connectMysqlDb = () => {
   connection.connect((err) => {
     if (err) throw err;
-    console.log('Connected to MySQL database!');
+    console.log("Connected to MySQL database!");
   });
-}
+};
 
 module.exports = {
   connectMysqlDb,
