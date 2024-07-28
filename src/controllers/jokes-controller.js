@@ -44,6 +44,25 @@ const addJoke = async (req, res) => {
 
   let newTypeId;
 
+  const addToDb = (jokeTypeId) => {
+    MySqlDbConnection.promise()
+      .execute(
+        `INSERT INTO Jokes (Joke, Delivery, JokeTypeId)
+    VALUES (?, ?, ?);`,
+        [joke, jokeDelivery, jokeTypeId],
+      )
+      .then(() => {
+        res.status(200).send({
+          success: true,
+        });
+      })
+      .catch(() => {
+        res.status(500).send({
+          success: false,
+        });
+      });
+  };
+
   if (isCustomJoke) {
     MySqlDbConnection.promise()
       .execute(
@@ -53,30 +72,16 @@ const addJoke = async (req, res) => {
       )
       .then(([rows, _]) => {
         newTypeId = rows.insertId;
+        addToDb(newTypeId);
       })
       .catch(() => {
         res.status(500).send({
           success: false,
         });
       });
+  } else {
+    addToDb(jokeTypeId);
   }
-
-  MySqlDbConnection.promise()
-    .execute(
-      `INSERT INTO Jokes (Joke, Delivery, JokeTypeId)
-      VALUES (?, ?, ?);`,
-      [joke, jokeDelivery, isCustomJoke ? newTypeId : jokeTypeId],
-    )
-    .then(() => {
-      res.status(200).send({
-        success: true,
-      });
-    })
-    .catch(() => {
-      res.status(500).send({
-        success: false,
-      });
-    });
 };
 
 module.exports = {
