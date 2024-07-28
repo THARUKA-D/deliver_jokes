@@ -14,7 +14,7 @@ const routes = [
 	{
 		path: "/addJoke",
 		handler: addJoke,
-		method: "get",
+		method: "post",
 	},
 ];
 

@@ -1,9 +1,9 @@
 const { connection: MySqlDbConnection } = require("../utils/db");
 
-const fetchJoke = async (req, res) => {
+const fetchJoke = async (_, res) => {
   MySqlDbConnection
     .promise()
-    .query(`SELECT j.Joke, jt.JokeType
+    .query(`SELECT j.Joke, j.Delivery, jt.JokeType
       FROM Jokes j
       INNER JOIN JokeTypes jt ON j.JokeTypeId = jt.Id
       ORDER BY RAND()
@@ -14,33 +14,70 @@ const fetchJoke = async (req, res) => {
         data: rows,
       });
     })
-    .catch(console.error) // TODO: Handel errors
+    .catch(() => {
+      res.status(500).send({
+        success: false,
+      });
+    })
 }
 
-const jokeTypes = async (req, res) => {
+const jokeTypes = async (_, res) => {
   MySqlDbConnection
     .promise()
     .query('SELECT * FROM JokeTypes;')
-    .then(([rows, fields]) => {
+    .then(([rows, _]) => {
       res.status(200).send({
         success: true,
+        data: rows
       });
     })
-    .catch(console.error)
+    .catch(()=>{
+      res.status(500).send({
+        success: false,
+      });
+    }) 
 }
 
 const addJoke = async (req, res) => {
+  const {
+    isCustomJoke,
+    jokeTypeId,
+    customJokeType,
+    joke,
+    jokeDelivery
+  } = req.body;
+
+  let newTypeId;
+
+  if (isCustomJoke) {
+    MySqlDbConnection
+      .promise()
+      .execute(`INSERT INTO JokeTypes (JokeType)
+      VALUES (?);`, [customJokeType])
+      .then(([rows, _]) => {
+        newTypeId = rows.insertId;
+      })
+      .catch(() => {
+        res.status(500).send({
+          success: false,
+        });
+      })
+  }
+
   MySqlDbConnection
     .promise()
     .execute(`INSERT INTO Jokes (Joke, Delivery, JokeTypeId)
-      VALUES (?, ?, ?);`,['What kind of motorbike does Santa ride?', "A Holly Davidson!", 2]) // TODO: values must be received from request
-    .then(([rows, fields]) => {
+      VALUES (?, ?, ?);`, [joke, jokeDelivery, isCustomJoke ? newTypeId : jokeTypeId])
+    .then(() => {
       res.status(200).send({
         success: true,
-        data: rows,
       });
     })
-    .catch(console.log)
+    .catch(() => {
+      res.status(500).send({
+        success: false,
+      });
+    })
 }
 
 module.exports = {
